@@ -10,6 +10,7 @@ import fr.gsb.rv.dr.modeles.ModeleGsbRv;
 import fr.gsb.rv.dr.technique.ConnexionBD;
 import fr.gsb.rv.dr.technique.ConnexionException;
 import fr.gsb.rv.dr.technique.Session;
+import fr.gsb.rv.dr.vues.VueConnexion;
 import java.awt.event.InputEvent;
 import java.sql.Connection;
 import java.util.Collection;
@@ -34,6 +35,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -43,7 +46,7 @@ import javafx.stage.Stage;
 public class Appli extends Application {
     
    // Visiteur visiteur = new Visiteur("OB001", "BOUAICHI", "Oumayma");
-    Visiteur visiteur = null;
+ 
     boolean session = Session.estOuverte();
 
     
@@ -95,31 +98,34 @@ public class Appli extends Application {
         
         
          // function de l'item seConnecter
-        itemSeConnecter.setOnAction(
-                new EventHandler<ActionEvent>(){
-                    public void handle(ActionEvent event) {
-                        root.setCenter(new Label("Se connecter"));
-                        
-                       
-                        try {
-                            visiteur = ModeleGsbRv.seConnecter(" b34 ", "azerty");
-                        } catch (ConnexionException ex) {
-                            Logger.getLogger(Appli.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        
-                        // la session est ouvert lors de la connection 
-                        Session.ouvrir(visiteur) ; 
-                        session = Session.estOuverte();
-                      //  primaryStage.setTitle(visiteur.getNom() + " " +visiteur.getPrenom());
-                        
-                        itemSeConnecter.setDisable(true);
+               itemSeConnecter.setOnAction((ActionEvent event) -> {
+            try {
+                VueConnexion vue = new VueConnexion();
+                Optional<Pair<String, String>> response = vue.showAndWait();
+                if (response.isPresent()){
+                    Visiteur visiteur = ModeleGsbRv.seConnecter(response.get().getKey(), response.get().getValue());
+                    if (visiteur != null){
+                        Session.ouvrir(visiteur);
                         itemSeDéconnecter.setDisable(false);
-                        itemQuitter.setDisable(false);
+                        itemSeConnecter.setDisable(true);
+                        itemConsulter.setDisable(false);
+                        itemHésitants.setDisable(false);
                         menuRapports.setDisable(false);
                         menuPraticiens.setDisable(false);
-                   
-                      }
-                    }); 
+                        primaryStage.setTitle(Session.getSession().getLeVisiteur().getNom()+ " " + Session.getSession().getLeVisiteur().getPrenom());
+                        
+                    }else {
+                    Alert alert = new Alert (Alert.AlertType.ERROR);
+                    alert.setTitle ("Erreur");
+                    alert.setHeaderText("Connexion annulée :");
+                    alert.setContentText("Matricule ou mot de passe incorrecte!");
+                    alert.showAndWait();
+                }
+                }
+            } catch (ConnexionException ex) {
+                Logger.getLogger(Appli.class.getName()).log(Level.SEVERE, null, ex); 
+            }
+        });
         
         
         
