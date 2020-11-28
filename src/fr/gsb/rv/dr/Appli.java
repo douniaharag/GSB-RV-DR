@@ -5,7 +5,12 @@
  */
 package fr.gsb.rv.dr;
 
+import fr.gsb.rv.dr.entities.Visiteur;
+import fr.gsb.rv.dr.technique.ConnexionBD;
+import fr.gsb.rv.dr.technique.ConnexionException;
+import fr.gsb.rv.dr.technique.Session;
 import java.awt.event.InputEvent;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Optional;
 import javafx.application.Application;
@@ -26,42 +31,54 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+
 /**
  *
  * @author developpeur
  */
 public class Appli extends Application {
     
+    Visiteur visiteur = new Visiteur("OB001", "BOUAICHI", "Oumayma");
+    boolean session = Session.estOuverte();
+
+    
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws ConnexionException {
+        // teste de la classe Connexion BD 
+       // Connection connexion = ConnexionBD.getConnexion();
+        
+        //Creation de la barre d menus 
         
         MenuBar barreMenus = new MenuBar();
         
-
+         //Menu Fichier 
         Menu menuFichier = new Menu ("Fichier") ;
         MenuItem itemSeConnecter = new MenuItem("Se connecter");
          
-           
         MenuItem itemSeDéconnecter = new MenuItem("Se déconnecter");
         MenuItem itemQuitter = new MenuItem("Quitter");
        
-        
         menuFichier.getItems().add(itemSeConnecter);
         menuFichier.getItems().add(itemSeDéconnecter);
         menuFichier.getItems().add(itemQuitter);
         barreMenus.getMenus().add(menuFichier);
         
+        //Menu Rapport
         Menu menuRapports = new Menu ("Rapports") ;
         MenuItem itemConsulter = new MenuItem("Consulter");
         
         menuRapports.getItems().add(itemConsulter);
         barreMenus.getMenus().add(menuRapports);
         
+         //Menu Praticiens
         Menu menuPraticiens = new Menu ("Praticiens") ;
         MenuItem itemHésitants = new MenuItem("Hésitants");
         
         menuPraticiens.getItems().add(itemHésitants);
         barreMenus.getMenus().add(menuPraticiens);
+        
+        // au lancement de l'application la session est fermée
+        Session.fermer();
         
         itemSeConnecter.setDisable(false);
         itemSeDéconnecter.setDisable(true);
@@ -69,20 +86,28 @@ public class Appli extends Application {
         menuRapports.setDisable(true);
         menuPraticiens.setDisable(true);
         
+        
+         // function de l'item seConnecter
         itemSeConnecter.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle(ActionEvent event) {
+                        // la session est ouvert lors de la connection 
+                       /* Session.ouvrir(visiteur) ; 
+                        session = Session.estOuverte();
+                        primaryStage.setTitle(visiteur.getNom() + " " +visiteur.getPrenom());*/
+                        
                         itemSeConnecter.setDisable(true);
                         itemSeDéconnecter.setDisable(false);
                         itemQuitter.setDisable(false);
                         menuRapports.setDisable(false);
                         menuPraticiens.setDisable(false);
+                   
                       }
                     }); 
         
         
         
-        
+         // function de l'item SeDéconnecter
         itemSeDéconnecter.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle(ActionEvent event) {
@@ -93,11 +118,14 @@ public class Appli extends Application {
                         menuPraticiens.setDisable(true);
                       }
                     });  
-          
+        
+        // function de l'item  Quitter
+         itemQuitter.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
          itemQuitter.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle ( ActionEvent event) {
-                         Alert alertQuitter = new Alert(Alert.AlertType.CONFIRMATION) ;
+                        Session.fermer(); ; 
+                        Alert alertQuitter = new Alert(Alert.AlertType.CONFIRMATION) ;
                         alertQuitter.setTitle("Quitter");
                         alertQuitter.setHeaderText("Demande de confirmation");
                         alertQuitter.setContentText("Voulez-vus quitter l'application");
@@ -112,6 +140,25 @@ public class Appli extends Application {
 
               }
         );
+         
+         
+         // function de l'item  Consulter
+        /* itemConsulter.setOnAction(
+                new EventHandler<ActionEvent>(){
+                    public void handle(ActionEvent event) {
+                        primaryStage.setTitle("[Rapports] " + "" + visiteur.getNom() + " " + visiteur.getPrenom());
+                    }
+                }
+         );
+         
+         // function de l'item  Hésitants
+         itemHésitants.setOnAction(
+                new EventHandler<ActionEvent>(){
+                    public void handle(ActionEvent event) {
+                        primaryStage.setTitle("[Praticiens] " + "" + visiteur.getNom() + " " + visiteur.getPrenom());
+                    }
+                }
+         );*/
         
         BorderPane menu = new BorderPane();
         Scene scene = new Scene(barreMenus , 300 , 250);
