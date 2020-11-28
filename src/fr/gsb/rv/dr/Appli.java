@@ -6,6 +6,7 @@
 package fr.gsb.rv.dr;
 
 import fr.gsb.rv.dr.entities.Visiteur;
+import fr.gsb.rv.dr.modeles.ModeleGsbRv;
 import fr.gsb.rv.dr.technique.ConnexionBD;
 import fr.gsb.rv.dr.technique.ConnexionException;
 import fr.gsb.rv.dr.technique.Session;
@@ -13,6 +14,8 @@ import java.awt.event.InputEvent;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -22,6 +25,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -38,7 +42,8 @@ import javafx.stage.Stage;
  */
 public class Appli extends Application {
     
-    Visiteur visiteur = new Visiteur("OB001", "BOUAICHI", "Oumayma");
+   // Visiteur visiteur = new Visiteur("OB001", "BOUAICHI", "Oumayma");
+    Visiteur visiteur = null;
     boolean session = Session.estOuverte();
 
     
@@ -50,6 +55,8 @@ public class Appli extends Application {
         //Creation de la barre d menus 
         
         MenuBar barreMenus = new MenuBar();
+        BorderPane root = new BorderPane();
+     
         
          //Menu Fichier 
         Menu menuFichier = new Menu ("Fichier") ;
@@ -91,10 +98,19 @@ public class Appli extends Application {
         itemSeConnecter.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle(ActionEvent event) {
+                        root.setCenter(new Label("Se connecter"));
+                        
+                       
+                        try {
+                            visiteur = ModeleGsbRv.seConnecter(" b34 ", "azerty");
+                        } catch (ConnexionException ex) {
+                            Logger.getLogger(Appli.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
                         // la session est ouvert lors de la connection 
-                       /* Session.ouvrir(visiteur) ; 
+                        Session.ouvrir(visiteur) ; 
                         session = Session.estOuverte();
-                        primaryStage.setTitle(visiteur.getNom() + " " +visiteur.getPrenom());*/
+                      //  primaryStage.setTitle(visiteur.getNom() + " " +visiteur.getPrenom());
                         
                         itemSeConnecter.setDisable(true);
                         itemSeDéconnecter.setDisable(false);
@@ -161,7 +177,7 @@ public class Appli extends Application {
          );*/
         
         BorderPane menu = new BorderPane();
-        Scene scene = new Scene(barreMenus , 300 , 250);
+        Scene scene = new Scene(barreMenus , 700 , 400);
         primaryStage.setScene(scene);
         primaryStage.setTitle("GSB-RV-DR");
         primaryStage.show();
