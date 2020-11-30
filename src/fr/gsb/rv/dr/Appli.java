@@ -133,11 +133,15 @@ public class Appli extends Application {
         itemSeDéconnecter.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle(ActionEvent event) {
+                        Session.fermer();
                         itemSeConnecter.setDisable(false);
                         itemSeDéconnecter.setDisable(true);
                         itemQuitter.setDisable(false);
                         menuRapports.setDisable(true);
                         menuPraticiens.setDisable(true);
+                        primaryStage.setTitle("GSB-RV-DR");
+                        
+                        
                       }
                     });  
         
@@ -165,10 +169,10 @@ public class Appli extends Application {
          
          
          // function de l'item  Consulter
-        /* itemConsulter.setOnAction(
+         itemConsulter.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle(ActionEvent event) {
-                        primaryStage.setTitle("[Rapports] " + "" + visiteur.getNom() + " " + visiteur.getPrenom());
+                        primaryStage.setTitle("[Rapports] " + " " + Session.getSession().getLeVisiteur().getNom()+ " " + Session.getSession().getLeVisiteur().getPrenom());
                     }
                 }
          );
@@ -177,10 +181,10 @@ public class Appli extends Application {
          itemHésitants.setOnAction(
                 new EventHandler<ActionEvent>(){
                     public void handle(ActionEvent event) {
-                        primaryStage.setTitle("[Praticiens] " + "" + visiteur.getNom() + " " + visiteur.getPrenom());
+                        primaryStage.setTitle("[Praticiens] " + "" + Session.getSession().getLeVisiteur().getNom()+ " " + Session.getSession().getLeVisiteur().getPrenom());
                     }
                 }
-         );*/
+         );
         
         BorderPane menu = new BorderPane();
         Scene scene = new Scene(barreMenus , 700 , 400);
