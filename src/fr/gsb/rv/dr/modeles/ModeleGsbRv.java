@@ -17,28 +17,22 @@ public class ModeleGsbRv {
         
         Connection connexion = ConnexionBD.getConnexion() ;
         
-       /*  String requete = "select v.vis_matricule, v.vis_nom, v.vis_prenom, t.tra_role, t.jjmmaa " +
-                            "from Travailler t  " +
-                            "inner join Visiteur v\n" +
-                            "on v.vis_matricule = t.vis_matricule" +
-                            "where t.tra_role = \"Délégué\"" +
-                            "and jjmmaa = (" +
-                            "select max(jjmmaa)" +
-                            "from Travailler t2" +
-                            "where t2.vis_matricule = t.vis_matricule) " +
-                            "and v.vis_matricule = \""+matricule+"\" " +
-                            "and v.vis_mdp = \""+mdp+"\";" ;*/
        
-            String requete = "select vis_nom, vis_prenom "
-                + "from Visiteur "
-                + "INNER JOIN Travailler "
-                + "ON Visiteur.vis_matricule = Travailler.vis_matricule "
-                + "where Visiteur.vis_matricule = ? "
-                + "AND Travailler.tra_role like '%Délégué%'";      
+            String requete = "select v.vis_matricule , v.vis_nom , v.vis_prenom , t.tra_role , t.jjmmaa  "
+                    + "from Visiteur v "
+                    + "inner join Travailler t  "
+                    + "on t.vis_matricule=v.vis_matricule  "
+                    + "where tra_role='Délégué' "
+                    + "and jjmmaa=(select max(jjmmaa) "
+                    + "from Travailler t1 "
+                    + "where t.vis_matricule=t1.vis_matricule "
+                    + "and v.vis_matricule = ? "
+                    + "and v.vis_mdp =  ?)";    
         
         try {
             PreparedStatement requetePreparee = (PreparedStatement) connexion.prepareStatement( requete ) ;
             requetePreparee.setString( 1 , matricule );
+            requetePreparee.setString(2, mdp);
             ResultSet resultat = requetePreparee.executeQuery() ;
             
             if( resultat.next() ){
