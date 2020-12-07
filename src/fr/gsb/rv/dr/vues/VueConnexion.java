@@ -31,28 +31,6 @@ import javafx.util.Pair;
  * @author developpeur
  */
 
-import java.util.Optional;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import static javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE;
-import static javafx.scene.control.ButtonBar.ButtonData.OK_DONE;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.util.Callback;
-import javafx.util.Pair;
-
-/**
- *
- * @author etudiant
- */
 public class VueConnexion extends Dialog<Pair<String,String>> {
     
     private Dialog<Pair<String, String>> dialog = new Dialog<>();
