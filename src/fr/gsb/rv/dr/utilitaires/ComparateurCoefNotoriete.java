@@ -5,6 +5,11 @@
  */
 package fr.gsb.rv.dr.utilitaires;
 
+/**
+ *
+ * @author developpeur
+ */
+
 import fr.gsb.rv.dr.entities.Praticien;
 import java.util.Comparator;
 
@@ -29,5 +34,3 @@ public class ComparateurCoefNotoriete implements Comparator<Praticien> {
     }
 
 }
-
-
