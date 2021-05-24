@@ -20,6 +20,7 @@ import fr.gsb.rv.dr.technique.ConnexionException;
 import fr.gsb.rv.dr.utilitaires.ComparateurCoefConfiance;
 import fr.gsb.rv.dr.utilitaires.ComparateurCoefNotoriete;
 import fr.gsb.rv.dr.utilitaires.ComparateurDateVisite;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -43,165 +44,255 @@ import javafx.scene.layout.Pane;
  * @author developpeur
  */
 
-
 public class PanneauPraticiens extends Pane{
     
-    public Integer CRITERE_COEF = 1;
-    public Integer CRITERE_NOTO = 2;
-    public Integer CRITERE_DATE = 3;
+    /*public PanneauPraticiens () {
+        Label praLabel = new Label("Praticiens");
+        VBox praVBox = new VBox();
+        praVBox.getChildren().add(praLabel);
+        praVBox.setStyle("-fx-background-color:white;");
+        this.getChildren().add(praVBox);
+    }*/
     
+    public static int CRITERE_COEF_CONFIANCE = 1;
+    public static int CRITERE_COEF_NOTORIETE = 2;
+    public static int CRITERE_DATE_VISITE = 3;
     
-    private Integer critereTri = CRITERE_COEF;
+    private int critereTri = CRITERE_COEF_CONFIANCE;
     
-    private TableView<Praticien> tablePra;
+    //Création des boutons radio
+    private RadioButton rbCoefConfiance = new RadioButton("Confiance");
+    private RadioButton rbCoefNotoriete = new RadioButton("Notoriété");
+    private RadioButton rbDateVisite = new RadioButton("Date Visite");
     
-    public PanneauPraticiens() {
+    //Création de la tableView
+    private TableView<Praticien> tabPraticiens = new TableView<Praticien>();
     
-        this.setStyle("-fx-alignment: center; -fx-background-color: white;");
+    public PanneauPraticiens (){
+        //Boîte verticale (Vbox) avec le Label
+        VBox praVBox = new VBox();
+        praVBox.setStyle("-fx-background-color: white;");
+        praVBox.setSpacing(10);
+        praVBox.setPadding(new Insets(10, 810, 10, 10)); //450 (version1)
+        Label selectionTri = new Label("Sélectionner un critère de tri");
+        selectionTri.setStyle("-fx-font-weight: bold");
+        praVBox.getChildren().add(selectionTri);
         
-        VBox vb = new VBox();
+        //Grille (GridPane) avec les boutons radios
+        GridPane grilleRadio = new GridPane();
+        grilleRadio.setHgap(10);
+        grilleRadio.setVgap(10);
         
+        //Groupe de boutons radio
+        ToggleGroup grpTri = new ToggleGroup();
         
+        //Boutons radios dans le groupe
+        rbCoefConfiance.setToggleGroup(grpTri);
+        rbCoefNotoriete.setToggleGroup(grpTri);
+        rbDateVisite.setToggleGroup(grpTri);
         
-        Label lblPraticiens = new Label("Sélectionner un critère de tri :");
+        //Forcer la sélection
+        rbCoefConfiance.setSelected(true);
         
-        RadioButton conf = new RadioButton("Confiance");
-        RadioButton noto = new RadioButton("Notoriété");
-        RadioButton date = new RadioButton("Date Visite");
+        //Ajouter les boutons à la vue
+        grilleRadio.add(rbCoefConfiance, 0, 0);
+        grilleRadio.add(rbCoefNotoriete, 1, 0);
+        grilleRadio.add(rbDateVisite, 2, 0);
+        praVBox.getChildren().add(grilleRadio);
+        /*HBox hBox = new HBox(20, rbCoefConfiance, rbCoefNotoriete, rbDateVisite);
+        grilleRadio.add(hBox, 10, 10);
+        praVBox.getChildren().add(grilleRadio);*/
         
-        ToggleGroup group = new ToggleGroup();
+        //Création des Colonnes tabPraticien
+        TableColumn<Praticien, Integer> colNumero = new TableColumn<Praticien, Integer>( "Numéro" );
+        TableColumn<Praticien, String> colNom = new TableColumn<Praticien, String>( "Nom" );
+        TableColumn<Praticien, String> colVille = new TableColumn<Praticien, String>( "Ville" );
+//---------> VERSION 2
+        TableColumn<Praticien, String> colConfiance = new TableColumn<Praticien, String>("Confiance");
+        TableColumn<Praticien, String> colNotoriete = new TableColumn<Praticien, String>("Notoriété ");
+        TableColumn<Praticien, String> colDate = new TableColumn<Praticien, String>("Date de visite");
+//--------------------->
         
-        
-        conf.setToggleGroup(group);
-        noto.setToggleGroup(group);
-        date.setToggleGroup(group);
-        
-        GridPane grid = new GridPane();
-        
-        grid.getChildren().addAll(conf,noto,date);
-        
-        grid.setColumnIndex(conf, 0);
-        grid.setColumnIndex(noto, 1);
-        grid.setColumnIndex(date, 2);
-
-        conf.setSelected(true);
-        
-        grid.setStyle("-fx-alignment: center");
-        
-        tablePra = new TableView();
-        
-        TableColumn <Praticien,Integer> colNumero = new TableColumn<Praticien, Integer>("Numéro");
-        TableColumn <Praticien,String> colNom = new TableColumn<Praticien, String>("Nom");
-        TableColumn <Praticien,String> colVille = new TableColumn<Praticien, String>("Ville");
-        
-        tablePra.getColumns().addAll(colNumero, colNom, colVille);
-        
-        colNumero.setCellValueFactory(new PropertyValueFactory<>("numero"));
-        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        colVille.setCellValueFactory(new PropertyValueFactory<>("ville"));
-        
-        
-        
-        
-        grid.setHgap(10);
-        grid.setVgap(10);
-        
-        vb.setSpacing(10);
- 
-        
-        
-        vb.getChildren().add(lblPraticiens);
-        vb.getChildren().add(grid);
-        this.getChildren().add(vb);
-        
-        
-        try{
-
-            List<Praticien> praticiens = (List<Praticien>) ModeleGsbRv.getPraticiensHesitants();
-
-            Collections.sort(praticiens, new ComparateurCoefConfiance()); 
-            
-            ObservableList<Praticien> list = FXCollections.observableArrayList();
-
-            for(Praticien unPraticien : praticiens){
-                list.add(unPraticien);
-                
-               
-            }
-            System.out.println("\n");
-            
-            
-
-            
-        
-            tablePra.setItems(list);
+        //Taille des colonnes (150) VERSION 1
+        colNumero.setMinWidth(135);
+        colNom.setMinWidth(135);
+        colVille.setMinWidth(135);
+//---------> VERSION 2
+        colConfiance.setMinWidth(135);
+        colNotoriete.setMinWidth(135);
+        colDate.setMinWidth(135);
+        if(grpTri.getSelectedToggle() != null){
+            colConfiance.setStyle("-fx-background-color: limegreen");
         }
-        catch(Exception e){
+//----------------->
 
-        }
-        
-        vb.getChildren().add(tablePra);
-        
-        
-        
-        
+        //Observation pour MAJ
+        colNumero.setCellValueFactory( new PropertyValueFactory<>( "numero" ) );
+        colNom.setCellValueFactory( new PropertyValueFactory<>( "nom" ) );
+        colVille.setCellValueFactory( new PropertyValueFactory<>( "ville" ) );
+//--------> VERSION 2
+        colConfiance.setCellValueFactory(new PropertyValueFactory<>("dernierCoefConfiance") );
+        colNotoriete.setCellValueFactory(new PropertyValueFactory<>("coefNotoriete") );
+        colDate.setCellValueFactory(new PropertyValueFactory<>("dateDerniereVisite") );
+//---------------->
 
-                    
-        conf.setOnAction(( ActionEvent event )->{
-
-                    critereTri = CRITERE_COEF;
-                    this.rafraichir();
+        //Ajouter colonne à la tabPraticien VERSION 2
+        tabPraticiens.getColumns().addAll(colNumero, colNom, colVille, colConfiance, colNotoriete, colDate);
         
-   
+        tabPraticiens.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
+        praVBox.getChildren().add(tabPraticiens);       
+        
+        //Ecouteurs d'évènements
+        rbCoefConfiance.setOnAction((ActionEvent)->{
+                //Mémorisation du critère de tri sélectionné
+                //setCritereTri(CRITERE_COEF_CONFIANCE);
+                critereTri = CRITERE_COEF_CONFIANCE;
+//--------------> VERSION 2
+                if(grpTri.getSelectedToggle() != null) {
+                            if(critereTri == CRITERE_COEF_CONFIANCE){
+                                colConfiance.setStyle( "-fx-background-color: cyan" );  
+                                colNotoriete.setStyle( "-fx-background-color: none" ); 
+                                colDate.setStyle( "-fx-background-color: none" ); 
+                            }
                 }
-            
-        );
-        
-        noto.setOnAction(( ActionEvent event )->{
-                    critereTri = CRITERE_NOTO;
-                    this.rafraichir();
+//--------------------->
+            try {
+                //Rafraîchissement de la liste
+                rafraichir();
+            } catch (ConnexionException ex) {
+                Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        rbCoefNotoriete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    //Mémorisation du critère de tri sélectionné
+                    //setCritereTri(CRITERE_COEF_NOTORIETE);
+                    critereTri = CRITERE_COEF_NOTORIETE;
+//-------------------> VERSION 2
+                    if(grpTri.getSelectedToggle() != null) {
+                        if(critereTri == CRITERE_COEF_NOTORIETE){ 
+                            colConfiance.setStyle( "-fx-background-color: none" );  
+                            colNotoriete.setStyle( "-fx-background-color: limegreen" );
+                            colDate.setStyle( "-fx-background-color: none" ); 
+                        }
                     }
-        );
-        
-        date.setOnAction(( ActionEvent event )->{
-                    critereTri = CRITERE_DATE;
-                    this.rafraichir();
+//--------------------->
+                    //Rafraîchissement de la liste
+                    rafraichir();
+                } catch (ConnexionException ex) {
+                    Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        rbDateVisite.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //Mémorisation du critère de tri sélectionné
+                //setCritereTri(CRITERE_DATE_VISITE);
+                critereTri = CRITERE_DATE_VISITE;
+//-------------------> VERSION 2
+                    if(grpTri.getSelectedToggle() != null) {
+                        if(critereTri == CRITERE_DATE_VISITE){ 
+                            colConfiance.setStyle( "-fx-background-color: none" );  
+                            colNotoriete.setStyle( "-fx-background-color: none" );
+                            colDate.setStyle( "-fx-background-color: limegreen" ); 
+                        }
                     }
-        );
+//--------------------->                
+                try {
+                    //Rafraîchissement de la liste
+                    rafraichir();
+                } catch (ConnexionException ex) {
+                    Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     
-    
+        this.getChildren().add(praVBox) ;
+        setCritereTri(CRITERE_DATE_VISITE);
+        try {
+            this.rafraichir() ;
+        } catch(Exception e){
+            System.out.println( "Pb" ) ;
+        }
+        
     }
     
-    public void rafraichir() {
-        
-        List<Praticien> pra;
+    public void rafraichir() throws ConnexionException, SQLException{
         try{
-            pra = ModeleGsbRv.getPraticiensHesitants();
-            ObservableList<Praticien> ol = FXCollections.observableArrayList(pra);
+            //System.out.println( "PanPrat::raf" ) ; ---->test pour trouver erreur d'affichage
             
-            Collections.sort(ol,new ComparateurCoefConfiance());
+            //Obtenir la liste des Praticiens
+            List<Praticien> praticiens = ModeleGsbRv.getPraticiensHesitants();
+            
+            /*for( Praticien p : praticiens ){      ---->test pour trouver erreur d'affichage renvoie la liste des praHesitants
+                System.out.println( "> " + p  ) ;
+            }*/
+            
+            //Convertir la listepraticiens hesitantd en liste observable
+            ObservableList<Praticien> obListPra = FXCollections.observableArrayList(praticiens);
+            
+            /*System.out.println( "T> " + obListPra.size() ) ;---->test pour trouver erreur d'affichage, taille des praHesitants
+            
+            tabPraticiens.setItems(obListPra);
+            tabPraticiens.refresh();*/
+            
+            //Traitements spécifiques au 3 critères de tri
+            if(critereTri == CRITERE_COEF_CONFIANCE){
+                Collections.sort(obListPra, new ComparateurCoefConfiance() );
+                //tabPraticiens.setItems(obListPra);
+            }
+            else if(critereTri == CRITERE_COEF_NOTORIETE){
+                Collections.sort(obListPra, new ComparateurCoefNotoriete() );
+                Collections.reverse(obListPra);
+                //tabPraticiens.setItems(obListPra);
 
-            if(critereTri == 1){
-                tablePra.setItems(ol);
             }
-            else if(critereTri == 2){
-                Collections.sort(ol, new ComparateurCoefNotoriete());
-                Collections.reverse(ol);
-                tablePra.setItems(ol);
+            else{
+                Collections.sort(obListPra, new ComparateurDateVisite() );
+                Collections.reverse(obListPra);
+                //tabPraticiens.setItems(obListPra);
+
             }
-            else if(critereTri == 3){
-                Collections.sort(ol, new ComparateurDateVisite());
-                Collections.reverse(ol);
-                tablePra.setItems(ol);
-            }
+            tabPraticiens.setItems(obListPra);
+            tabPraticiens.refresh();
+           
+            
+            //Ajouter listObservable à la tabPraticiens
+            /*tabPraticiens.getItems().clear();
+            tabPraticiens.getItems().addAll(obListPra);*/
+            
+        }catch(ConnexionException ex){
+            Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
+        }catch (SQLException ex) {
+                    Logger.getLogger(PanneauPraticiens.class.getName()).log(Level.SEVERE, null, ex);
         }
-        catch( Exception e ){
-        }
+        
     }
     
-
-                
-        
+    public int getCritereTri(){
+        return critereTri;
+    }
     
+    public void setCritereTri(int critereTri){
+        this.critereTri = critereTri;
+        /*if(critereTri == CRITERE_COEF_CONFIANCE){
+            rbCoefConfiance.setSelected(true);
+        }
+        else if(critereTri == CRITERE_COEF_NOTORIETE){
+            rbCoefNotoriete.setSelected(true);
+        }
+        else{
+            rbDateVisite.setSelected(true);
+        }*/
+    }   
 }

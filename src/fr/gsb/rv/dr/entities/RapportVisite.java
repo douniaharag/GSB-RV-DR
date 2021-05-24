@@ -15,95 +15,109 @@ import java.time.LocalDate;
 
 
 public class RapportVisite {
+    private int rap_num;
+    private LocalDate rap_date_visite;
+    private LocalDate rap_date_saisie;
+    private String rap_bilan;
+    private Motif_visite motif;
+    private int rap_coeff_confiance;
+    private boolean rap_lu;
+    private Visiteur visiteur;
+    private Praticien praticien;
     
-    private int numero,coefConfiance ;
-    private LocalDate dateVisite, dateRedaction ;
-    private String bilan, motif ;
-    private boolean lu ;
+    public RapportVisite(int rap_num, LocalDate rap_date_visite, LocalDate rap_date_saisie, String rap_bilan, Motif_visite motif, int rap_coeff_confiance, boolean rap_lu, Visiteur visiteur, Praticien praticien){
+        this.rap_num = rap_num;
+        this.rap_date_visite = rap_date_visite;
+        this.rap_date_saisie = rap_date_saisie;
+        this.rap_bilan = rap_bilan;
+        this.motif = motif;
+        this.rap_coeff_confiance = rap_coeff_confiance;
+        this.rap_lu = rap_lu;
+        this.visiteur = visiteur;
+        this.praticien = praticien;
+    }
     
-    private Visiteur leVisiteur ;
-    private Praticien lePraticien ;
-
-    public RapportVisite() {
+    public RapportVisite(){
+        
     }
 
-    public int getNumero() {
-        return numero;
+    public int getRap_num() {
+        return rap_num;
     }
 
-    public void setNumero(int numero) {
-        this.numero = numero;
+    public void setRap_num(int rap_num) {
+        this.rap_num = rap_num;
     }
 
-    public int getCoefConfiance() {
-        return coefConfiance;
+    public LocalDate getRap_date_visite() {
+        return rap_date_visite;
     }
 
-    public void setCoefConfiance(int coefConfiance) {
-        this.coefConfiance = coefConfiance;
+    public void setRap_date_visite(LocalDate rap_date_visite) {
+        this.rap_date_visite = rap_date_visite;
     }
 
-    public LocalDate getDateVisite() {
-        return dateVisite;
+    public LocalDate getRap_date_saisie() {
+        return rap_date_saisie;
     }
 
-    public void setDateVisite(LocalDate dateVisite) {
-        this.dateVisite = dateVisite;
+    public void setRap_date_saisie(LocalDate rap_date_saisie) {
+        this.rap_date_saisie = rap_date_saisie;
     }
 
-    public LocalDate getDateRedaction() {
-        return dateRedaction;
+    public String getRap_bilan() {
+        return rap_bilan;
     }
 
-    public void setDateRedaction(LocalDate dateRedaction) {
-        this.dateRedaction = dateRedaction;
+    public void setRap_bilan(String rap_bilan) {
+        this.rap_bilan = rap_bilan;
     }
 
-    public String getBilan() {
-        return bilan;
-    }
-
-    public void setBilan(String bilan) {
-        this.bilan = bilan;
-    }
-
-    public String getMotif() {
+    public Motif_visite getMotif() {
         return motif;
     }
 
-    public void setMotif(String motif) {
+    public void setMotif(Motif_visite motif) {
         this.motif = motif;
     }
 
-    public boolean isLu() {
-        return lu;
+    public int getRap_coeff_confiance() {
+        return rap_coeff_confiance;
     }
 
-    public void setLu(boolean lu) {
-        this.lu = lu;
+    public void setRap_coeff_confiance(int rap_coeff_confiance) {
+        this.rap_coeff_confiance = rap_coeff_confiance;
     }
 
-    public Visiteur getLeVisiteur() {
-        return leVisiteur;
+    public boolean isRap_lu() {
+        return rap_lu;
     }
 
-    public void setLeVisiteur(Visiteur leVisiteur) {
-        this.leVisiteur = leVisiteur;
+    public void setRap_lu(boolean rap_lu) {
+        this.rap_lu = rap_lu;
     }
 
-    public Praticien getLePraticien() {
-        return lePraticien;
+    public Visiteur getVisiteur() {
+        return visiteur;
     }
 
-    public void setLePraticien(Praticien lePraticien) {
-        this.lePraticien = lePraticien;
+    public void setVisiteur(Visiteur visiteur) {
+        this.visiteur = visiteur;
     }
+
+    public Praticien getPraticien() {
+        return praticien;
+    }
+
+    public void setPraticien(Praticien praticien) {
+        this.praticien = praticien;
+    }  
 
     @Override
     public String toString() {
-        return "RapportVisite{" + "numero=" + numero + ", coefConfiance=" + coefConfiance + ", dateVisite=" + dateVisite + ", dateRedaction=" + dateRedaction + ", bilan=" + bilan + ", motif=" + motif + ", lu=" + lu + ", leVisiteur=" + leVisiteur + ", lePraticien=" + lePraticien + '}';
+        return "RapportVisite{" + "rap_num=" + rap_num + ", rap_date_visite=" + rap_date_visite + ", rap_date_saisie=" + rap_date_saisie + ", rap_bilan=" + rap_bilan + ", motif=" + motif + ", rap_coeff_confiance=" + rap_coeff_confiance + ", rap_lu=" + rap_lu + ", visiteur=" + visiteur + ", praticien=" + praticien + '}';
     }
-    
+
     
     
 }

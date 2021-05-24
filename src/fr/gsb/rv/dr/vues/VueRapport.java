@@ -7,12 +7,15 @@ package fr.gsb.rv.dr.vues;
 
 import fr.gsb.rv.dr.entities.RapportVisite;
 import java.time.format.DateTimeFormatter;
+import javafx.geometry.Insets;
+import static javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE;
 import static javafx.scene.control.ButtonBar.ButtonData.OK_DONE;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 
 /**
@@ -20,63 +23,51 @@ import javafx.util.Pair;
  * @author developpeur
  */
 
-public class VueRapport extends Dialog<Pair<String,String>> {
+    
+public class VueRapport extends Dialog {
+    private Dialog diaRapp = new Dialog();
+    
+    public VueRapport(RapportVisite leRapportVis){
+        //Création Boîte verticale
+        VBox vbAll = new VBox();
+        //Dimension
+        vbAll.setPadding(new Insets(5, 350, 5, 5));
+        //Titre de la fenêtre 
+        setTitle("Rapport numéro: " + leRapportVis.getRap_num());
+        setHeaderText(leRapportVis.getVisiteur().getNom() + " " + leRapportVis.getVisiteur().getPrenom() + "\n" + "Informations du Rapport Visite");
+        //Déclaration des variables et valorisation
+        Text dateVis = new Text("La date de la Visite: " + leRapportVis.getRap_date_visite());
+        Text dateRed = new Text("Date de rédaction: " + leRapportVis.getRap_date_saisie());
+        Text visiteur = new Text("Visiteur: " + leRapportVis.getVisiteur().getNom());
+        Text praticien = new Text("Patraticien: " + leRapportVis.getPraticien().getNom() + " de " + leRapportVis.getPraticien().getVille());
+        Text motif = new Text("Motif: " + leRapportVis.getMotif().getMotif_libelle());
+        Text bilan = new Text("Bilan de la visite: " + leRapportVis.getRap_bilan());
+        Text coefConf = new Text("Coefficient Confiance: " + leRapportVis.getRap_coeff_confiance());
+        Text lu = new Text();
+        if(leRapportVis.isRap_lu()){
+            lu.setText("Lu: Oui");
+        }else{
+            lu.setText("Lu: Non");
+        }
+        //Boutons
+        ButtonType btnLu = new ButtonType("Manquer comme LU", OK_DONE);
+        if(leRapportVis.isRap_lu() == false){
+            this.getDialogPane().getButtonTypes().add(btnLu);
+        }else{
+            ButtonType annuler = new ButtonType("Fermer", CANCEL_CLOSE);
+            this.getDialogPane().getButtonTypes().add(annuler);
+        }
+        //Ajout des variable dans la VBox
+        vbAll.getChildren().addAll( dateVis, dateRed, visiteur, praticien, motif, bilan, coefConf, lu);
+        //Ajout dans la boîte de Dialog
+        getDialogPane().setContent(vbAll);
 
-    private RapportVisite leRapport;
-    /**
-     *
-     * @param rv
-     */
-    public VueRapport(RapportVisite rv){
-
-        Label lNumero = new Label("Numero : ");
-        Label lNomPraticien = new Label("Nom du praticien : ");
-        Label lDateVisite = new Label("Date de visite : ");
-        Label lDateRedaction = new Label("Date de rédaction : ");
-        Label lBilan = new Label("Bilan : ");
-        Label lMotif = new Label("Motif : ");
-        Label lCoefConfiance = new Label("Coefficient de confiance : ");
-        Label lNomVisi = new Label("Nom de visiteur : ");
-
-        Label lValNumero = new Label(""+ rv.getNumero());
-        Label lValNomPraticien = new
-        Label(rv.getLePraticien().getNom().toUpperCase() + " " + rv.getLePraticien().getPrenom());
-        Label lValDateVisite = new Label("" + rv.getDateVisite().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        Label lValDateRedaction = new Label("" + rv.getDateRedaction().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        Label lValBilan = new Label(rv.getBilan());
-        Label lValMotif = new Label(rv.getMotif());
-        Label lValCoefConfiance = new Label(""+ rv.getCoefConfiance());
-
-
-        VBox vbox = new VBox(5);
-        HBox hbox = new HBox(10);
-        HBox hbox2 = new HBox(10);
-        HBox hbox3 = new HBox(10);
-        HBox hbox4 = new HBox(10);
-        HBox hbox5 = new HBox(10);
-        HBox hbox6 = new HBox(10);
-        HBox hbox7 = new HBox(10);
-        HBox hbox8 = new HBox(10);
-
-        setTitle("Rapport visite");
-        setHeaderText("Détails du rapport de visite n°" + rv.getNumero());
-
-        hbox.getChildren().addAll(lNumero, lValNumero);
-        hbox2.getChildren().addAll(lNomPraticien, lValNomPraticien);
-        hbox3.getChildren().addAll(lDateVisite, lValDateVisite);
-        hbox4.getChildren().addAll(lDateRedaction, lValDateRedaction);
-        hbox5.getChildren().addAll(lBilan, lValBilan);
-        hbox6.getChildren().addAll(lMotif, lValMotif);
-        hbox7.getChildren().addAll(lCoefConfiance, lValCoefConfiance);
-       
-
-        vbox.getChildren().addAll(hbox, hbox2, hbox3, hbox4, hbox5, hbox6, hbox7, hbox8);
-
-        getDialogPane().setContent(vbox);
-
-        ButtonType btnValider = new ButtonType("Valider", OK_DONE);
-
-        getDialogPane().getButtonTypes().add(btnValider);
-
+        setResultConverter(
+            dialogBtn ->{
+                if(dialogBtn == btnLu){
+                    return "valider";
+                } 
+                return null;
+            });
     }
 }

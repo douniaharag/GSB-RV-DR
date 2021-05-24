@@ -18,22 +18,20 @@ import java.util.Comparator;
  *
  * @author developpeur
  */
-public class ComparateurCoefConfiance  implements Comparator<Praticien> {
-    @Override
-    public int compare(Praticien o1, Praticien o2) {
-
-        if(o1.getDernierCoefConfiance() == o2.getDernierCoefConfiance()){
+public class ComparateurCoefConfiance implements Comparator<Praticien>{
+    
+    public int compare( Praticien o1, Praticien o2){
+        
+        if( o1.getDernierCoefConfiance() == o2.getDernierCoefConfiance()){
             return 0;
         }
-        else if(o1.getDernierCoefConfiance() > o2.getDernierCoefConfiance()){
+        else if( o1.getDernierCoefConfiance() > o2.getDernierCoefConfiance()){
             return 1;
         }
         else{
             return -1;
         }
     }
-
-
     
 }
 
